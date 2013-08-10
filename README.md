@@ -1,24 +1,52 @@
 # FilterableSortable
 
-TODO: Write a gem description
+Gem generates :filtered and :sorted scopes, can be easily used for building admin zone or other filterable sortable architecture.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'filterable_sortable'
+```ruby
+gem 'filterable_sortable'
+```
 
 And then execute:
 
-    $ bundle
+```console
+bundle
+```
 
 Or install it yourself as:
 
-    $ gem install filterable_sortable
+```console
+gem install filterable_sortable
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+### Models
+
+First of all include module into ActiveRecord::Base inherited class
+
+```ruby
+include FilterableSortable
+```
+
+### Controllers
+
+In controllers add scopes to index action. I use 'will_paginate' gem, so here is method *.paginate(...)
+
+```ruby
+@posts = Post.filtered(params[:filter]).ordered(params[:order]).paginate(page: params[:page], per_page: params[:per_page])
+```
+
+### Views
+
+In views you can use links with params for order and filter. Example in Haml.
+
+```ruby
+= link_to 'Name', posts_path(filter: :name, order: {field: :name, direction: :ASC})
+```
 
 ## Contributing
 
