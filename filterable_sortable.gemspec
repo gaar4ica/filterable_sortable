@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email         = ["gaar4ica@gmail.com"]
   s.description   = 'Gem generates :filtered and :sorted scopes, can be easily used for building admin zone or other filterable sortable architecture.'
   s.summary       = 'Model-based filterable and sortable functionality.'
-  s.homepage      = ""
+  s.homepage      = "https://github.com/gaar4ica/filterable_sortable"
   s.license       = "MIT"
 
   s.files         = `git ls-files`.split($/)
