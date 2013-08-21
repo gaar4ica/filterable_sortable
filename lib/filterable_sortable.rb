@@ -5,8 +5,20 @@ module FilterableSortable
   extend ActiveSupport::Concern
 
   included do
-    scope :filtered, lambda { |filtered| }
-    scope :ordered, lambda { |ordered| order("#{ordered[:field]} #{ordered[:direction]}") if ordered }
-  end
 
+    scope :filtered, lambda { |filter|
+      if filter[:search]
+        search(filter[:search])
+      elsif filter[:custom]
+      end
+    }
+
+    scope :search, lambda { |term|
+      conditions = Array.new(self.attribute_names).delete_if{|i| i.in? ["created_at", "updated_at"] }.collect{|f| "#{f} like '%#{term}%'"}.join(' OR ')
+      where(conditions)
+    }
+
+    scope :ordered, lambda { |ordered| order("#{ordered[:field]} #{ordered[:direction]}") if ordered }
+
+  end
 end
