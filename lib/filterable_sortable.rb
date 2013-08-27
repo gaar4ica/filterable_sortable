@@ -10,6 +10,7 @@ module FilterableSortable
       if filter[:search]
         search(filter[:search])
       elsif filter[:custom]
+        self.send(filter[:custom]) if self.methods.include?(filter[:custom])
       end
     }
 
