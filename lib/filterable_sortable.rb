@@ -9,8 +9,8 @@ module FilterableSortable
     scope :filtered, lambda { |filter|
       if filter[:search]
         search(filter[:search])
-      elsif filter[:custom]
-        self.send(filter[:custom]) if self.methods.include?(filter[:custom])
+      elsif filter[:custom] && filter[:custom] != 'all'
+        self.send(filter[:custom].to_sym) if self.methods.include?(filter[:custom].to_sym)
       end
     }
 
