@@ -15,11 +15,14 @@ module FilterableSortable
     }
 
     scope :search, lambda { |term|
-      conditions = Array.new(self.attribute_names).delete_if{|i| i.in? ["created_at", "updated_at"] }.collect{|f| "#{f} like '%#{term}%'"}.join(' OR ')
+      conditions = Array.new(self.attribute_names).delete_if{|i| i.in? ["created_at", "updated_at"] }.collect{|f| "#{self.table_name}.#{f} like '%#{term}%'"}.join(' OR ')
       where(conditions)
     }
 
-    scope :ordered, lambda { |ordered| order("#{ordered[:field]} #{ordered[:direction]}") if ordered }
+    scope :ordered, lambda { |ordered|
+      ordered[:field] = "#{self.table_name}.#{ordered[:field]}" if ordered[:field].split('.') == 1
+      order("#{ordered[:field]} #{ordered[:direction]}") if ordered
+    }
 
   end
 end
