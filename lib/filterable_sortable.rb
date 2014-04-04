@@ -20,7 +20,7 @@ module FilterableSortable
     }
 
     scope :ordered, lambda { |ordered|
-      ordered[:field] = "#{self.table_name}.#{ordered[:field]}" if ordered[:field].split('.') == 1
+      ordered[:field] = "#{self.table_name}.#{ordered[:field]}" unless ordered[:field].match(/\./)
       order("#{ordered[:field]} #{ordered[:direction]}") if ordered
     }
 
