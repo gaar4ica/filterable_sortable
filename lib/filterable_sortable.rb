@@ -15,7 +15,7 @@ module FilterableSortable
     }
 
     scope :search, lambda { |term|
-      conditions = Array.new(self.attribute_names).delete_if{|i| i.in? ["created_at", "updated_at"] }.collect{|f| "#{self.table_name}.#{f} like '%#{term}%'"}.join(' OR ')
+      conditions = self.columns_hash.collect{|k,v| k unless v.type.in?([:datetime, :time, :date])}.compact.collect{|f| "#{self.table_name}.#{f} like '%#{term}%'"}.join(' OR ')
       where(conditions)
     }
 
