@@ -22,10 +22,10 @@ module FilterableSortable
         columns_hash.
         map { |k, v| k unless v.type.in?([:datetime, :time, :date]) }.
         compact.
-        map { |f|
+        map do |f|
           "#{table_name}.#{f} like " \
-          "#{ActiveRecord::Base.sanitize("'%#{term}%'")}"
-        }.
+          "#{ActiveRecord::Base.sanitize('%#{term}%')}"
+        end.
         join(' OR ')
       where(conditions)
     }
