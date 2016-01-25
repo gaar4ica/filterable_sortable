@@ -10,28 +10,27 @@ module FilterableSortable
       if filter[:search]
         search(filter[:search])
       elsif filter[:custom] && filter[:custom] != 'all'
-        if self.methods.include?(filter[:custom].to_sym) &&
+        if methods.include?(filter[:custom].to_sym) &&
           !(filter[:custom] =~ /delete_|update_|create|drop_|destroy_|\!/)
-          self.readonly.send(filter[:custom].to_sym)
+          readonly.send(filter[:custom].to_sym)
         end
       end
     }
 
     scope :search, lambda { |term|
-      conditions = self
-                     .columns_hash
-                     .collect { |k, v| k unless v.type.in?([:datetime, :time, :date]) }
-                     .compact
-                     .collect { |f| "#{self.table_name}.#{f} like #{ActiveRecord::Base::sanitize("'%#{term}%'")}" }
-                     .join(' OR ')
+      conditions = columns_hash.
+        collect { |k, v| k unless v.type.in?([:datetime, :time, :date]) }.
+        compact.
+        collect { |f| "#{table_name}.#{f} like #{ActiveRecord::Base.sanitize("'%#{term}%'")}" }.
+        join(' OR ')
       where(conditions)
     }
 
     scope :ordered, lambda { |ordered|
-      ordered[:field] = if ordered[:field].match(/\./)
-                          ActiveRecord::Base::sanitize "#{self.table_name}.#{ordered[:field]}"
+      ordered[:field] = if ordered[:field] =~ /\./
+                          ActiveRecord::Base.sanitize "#{table_name}.#{ordered[:field]}"
                         else
-                          ActiveRecord::Base::sanitize ordered[:field]
+                          ActiveRecord::Base.sanitize ordered[:field]
                         end
       if ordered
         case ordered[:direction].to_s.capitalize
