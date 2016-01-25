@@ -55,6 +55,5 @@ module FilterableSortable
     def self.excluded_search_types
       [:datetime, :time, :date].freeze
     end
-
   end
 end
