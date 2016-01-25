@@ -11,7 +11,7 @@ module FilterableSortable
         search(filter[:search])
       elsif filter[:custom] && filter[:custom] != 'all'
         if methods.include?(filter[:custom].to_sym) &&
-          !(filter[:custom] =~ /delete_|update_|create|drop_|destroy_|\!/)
+          !dangerous_filtered_method?(filter[:custom])
           readonly.send(filter[:custom].to_sym)
         end
       end
@@ -20,11 +20,11 @@ module FilterableSortable
     scope :search, lambda { |term|
       conditions =
         columns_hash.
-        map { |k, v| k unless v.type.in?([:datetime, :time, :date]) }.
-        compact.
+        select { |_, v| !v.type.in?(excluded_search_types) }.
+        keys.
         map do |f|
           "#{table_name}.#{f} like " \
-          "#{ActiveRecord::Base.sanitize('%#{term}%')}"
+          "#{ActiveRecord::Base.sanitize("%#{term}%")}"
         end.
         join(' OR ')
       where(conditions)
@@ -45,6 +45,16 @@ module FilterableSortable
         end
       end
     }
+
+    private
+
+    def self.dangerous_filtered_method?(method)
+      method =~ /delete_|update_|create|drop_|destroy_|\!/
+    end
+
+    def self.excluded_search_types
+      [:datetime, :time, :date].freeze
+    end
 
   end
 end
