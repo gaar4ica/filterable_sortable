@@ -18,20 +18,25 @@ module FilterableSortable
     }
 
     scope :search, lambda { |term|
-      conditions = columns_hash.
-        collect { |k, v| k unless v.type.in?([:datetime, :time, :date]) }.
+      conditions =
+        columns_hash.
+        map { |k, v| k unless v.type.in?([:datetime, :time, :date]) }.
         compact.
-        collect { |f| "#{table_name}.#{f} like #{ActiveRecord::Base.sanitize("'%#{term}%'")}" }.
+        map { |f|
+          "#{table_name}.#{f} like " \
+          "#{ActiveRecord::Base.sanitize("'%#{term}%'")}"
+        }.
         join(' OR ')
       where(conditions)
     }
 
     scope :ordered, lambda { |ordered|
-      ordered[:field] = if ordered[:field] =~ /\./
-                          ActiveRecord::Base.sanitize "#{table_name}.#{ordered[:field]}"
-                        else
-                          ActiveRecord::Base.sanitize ordered[:field]
-                        end
+      ordered[:field] =
+        if ordered[:field] =~ /\./
+          ActiveRecord::Base.sanitize "#{table_name}.#{ordered[:field]}"
+        else
+          ActiveRecord::Base.sanitize ordered[:field]
+        end
       if ordered
         case ordered[:direction].to_s.capitalize
         when "ASC"
