@@ -38,10 +38,7 @@ module FilterableSortable
           ActiveRecord::Base.sanitize ordered[:field]
         end
       if ordered
-        case ordered[:direction].to_s.capitalize
-        when "ASC"
-          order(ordered[:field] => :ASC)
-        when "DESC"
+        if ordered[:direction].to_s.capitalize == "DESC"
           order(ordered[:field] => :DESC)
         else
           order(ordered[:field])
